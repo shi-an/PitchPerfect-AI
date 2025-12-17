@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Rocket, Briefcase, Glasses, User, ArrowRight } from 'lucide-react';
 import { Persona, StartupDetails } from '../types';
+import { getUserConfig, saveUserConfig, listUserStartups } from '../services/storageService';
 
 interface Props {
   onStart: (persona: Persona, details: StartupDetails) => void;
@@ -9,28 +10,28 @@ interface Props {
 const PERSONAS: Persona[] = [
   {
     id: 'shark',
-    name: 'Kevin "The Shark"',
-    role: 'Venture Capitalist',
-    description: 'Ruthless. Cares about margins, CAC, and LTV. Hates buzzwords.',
-    style: 'Short, aggressive, numbers-focused.',
+    name: '凯文「鲨鱼」',
+    role: '风险投资人',
+    description: '冷酷无情：只看利润、获客成本与用户生命周期价值。厌恶空话。',
+    style: '简短、强势、以数据为中心。',
     icon: 'shark',
     color: 'bg-red-500'
   },
   {
     id: 'visionary',
-    name: 'Elara Moon',
-    role: 'Angel Investor',
-    description: 'Looks for moonshots. Cares about the "Why" and human impact.',
-    style: 'Inspirational, abstract, curious.',
+    name: '伊拉拉·月',
+    role: '天使投资人',
+    description: '寻找登月项目，关注“为什么”与人类影响。',
+    style: '鼓舞人心、抽象、充满好奇。',
     icon: 'star',
     color: 'bg-purple-500'
   },
   {
     id: 'skeptic',
-    name: 'Dave Ops',
-    role: 'Technical Founder',
-    description: 'Former CTO. Drills into the tech stack and feasibility.',
-    style: 'Detailed, skeptical, technical.',
+    name: '戴夫·运营',
+    role: '技术创始人',
+    description: '前 CTO，深挖技术栈与可行性。',
+    style: '细致、怀疑、技术导向。',
     icon: 'code',
     color: 'bg-blue-500'
   }
@@ -42,11 +43,39 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
 
   const canStart = details.name.length > 2 && details.description.length > 10;
 
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const startups = await listUserStartups();
+        if (startups && startups.items?.length) {
+          const defId = startups.defaultStartupId || startups.items[0]?.id;
+          const def = startups.items.find(s => s.id === defId) || startups.items[0];
+          if (def) setDetails({ name: def.name, description: def.description });
+        } else {
+          const cfg = await getUserConfig();
+          if (cfg?.savedStartup?.name && cfg?.savedStartup?.description) {
+            setDetails({ name: cfg.savedStartup.name, description: cfg.savedStartup.description });
+          }
+          if (cfg?.defaultPersonaId) {
+            const found = PERSONAS.find(p => p.id === cfg.defaultPersonaId);
+            if (found) setSelectedPersona(found);
+          }
+        }
+        const cfg2 = await getUserConfig();
+        if (cfg2?.defaultPersonaId) {
+          const found2 = PERSONAS.find(p => p.id === cfg2.defaultPersonaId);
+          if (found2) setSelectedPersona(found2);
+        }
+      } catch {}
+    };
+    run();
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto p-6 md:p-12 w-full animate-in zoom-in duration-500">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">Initialize Simulation</h2>
-        <p className="text-slate-400">Configure your session parameters</p>
+        <h2 className="text-3xl font-bold text-white mb-2">初始化模拟</h2>
+        <p className="text-slate-400">配置你的会话参数</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
@@ -54,26 +83,26 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
         <div className="space-y-6 animate-in slide-in-from-bottom-4" style={{ animationDelay: '0.1s' }}>
           <h3 className="text-sm font-bold uppercase tracking-wider text-violet-400 mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center text-xs">1</span>
-            Startup Profile
+            创业项目资料
           </h3>
           <div className="space-y-4">
             <div className="group">
-              <label className="text-xs font-bold uppercase text-slate-500 mb-2 block group-focus-within:text-violet-400 transition-colors">Company Name</label>
+              <label className="text-xs font-bold uppercase text-slate-500 mb-2 block group-focus-within:text-violet-400 transition-colors">公司名称</label>
               <input
                 type="text"
                 value={details.name}
                 onChange={(e) => setDetails({ ...details, name: e.target.value })}
-                placeholder="e.g. Uber for Dogs"
+                placeholder="例如：宠物出行的优步"
                 className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-slate-800 outline-none text-white transition-all placeholder:text-slate-600 shadow-sm"
               />
             </div>
             
             <div className="group">
-              <label className="text-xs font-bold uppercase text-slate-500 mb-2 block group-focus-within:text-violet-400 transition-colors">Elevator Pitch</label>
+              <label className="text-xs font-bold uppercase text-slate-500 mb-2 block group-focus-within:text-violet-400 transition-colors">电梯演讲</label>
               <textarea
                 value={details.description}
                 onChange={(e) => setDetails({ ...details, description: e.target.value })}
-                placeholder="We help dogs commute to work by connecting them with autonomous vehicles..."
+                placeholder="我们通过自动驾驶车辆帮助宠物通勤上班……"
                 className="w-full h-40 bg-slate-800/50 border border-slate-700 rounded-xl p-4 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-slate-800 outline-none text-white transition-all resize-none placeholder:text-slate-600 shadow-sm"
               />
             </div>
@@ -84,7 +113,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
         <div className="space-y-6 animate-in slide-in-from-bottom-4" style={{ animationDelay: '0.2s' }}>
           <h3 className="text-sm font-bold uppercase tracking-wider text-violet-400 mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center text-xs">2</span>
-            Select Investor
+            选择投资人
           </h3>
           <div className="space-y-3">
             {PERSONAS.map(p => (
@@ -117,8 +146,19 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
 
           <div className="pt-4">
              <div className="p-4 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-500 flex items-center justify-between">
-                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> System Status</span>
-                <span className="font-mono text-violet-400">Gemini 2.5 Flash Online</span>
+               <span className="flex items-center gap-2">
+                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> 系统状态
+               </span>
+               <span className="font-mono text-violet-400">
+                 {(() => {
+                   const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('model_provider') : null;
+                   const provider = (stored || (process.env.MODEL_PROVIDER || 'deepseek')).toLowerCase();
+                   if (provider === 'deepseek') {
+                     return process.env.DEEPSEEK_API_KEY ? 'DeepSeek Chat 在线' : 'DeepSeek Chat 未配置';
+                   }
+                   return process.env.GEMINI_API_KEY ? 'Gemini 2.5 Flash 在线' : 'Gemini 2.5 Flash 未配置';
+                 })()}
+               </span>
              </div>
           </div>
         </div>
@@ -126,7 +166,13 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
 
       <div className="mt-12 flex justify-center animate-in fade-in" style={{ animationDelay: '0.4s' }}>
         <button
-          onClick={() => canStart && onStart(selectedPersona, details)}
+          onClick={async () => {
+            if (!canStart) return;
+            try {
+              await saveUserConfig({ savedStartup: details, defaultPersonaId: selectedPersona.id });
+            } catch {}
+            onStart(selectedPersona, details);
+          }}
           disabled={!canStart}
           className={`px-12 py-4 rounded-xl font-bold text-lg tracking-wide shadow-lg transition-all duration-300 flex items-center gap-2 ${
             canStart 
@@ -134,7 +180,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
               : 'bg-slate-800 text-slate-600 cursor-not-allowed grayscale'
           }`}
         >
-          ENTER THE ROOM
+          进入会议室
           {canStart && <ArrowRight className="w-5 h-5 animate-pulse" />}
         </button>
       </div>

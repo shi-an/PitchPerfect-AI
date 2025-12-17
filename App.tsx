@@ -28,6 +28,7 @@ const App: React.FC = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [interestTrajectory, setInterestTrajectory] = useState<number[]>([]);
   const [initializing, setInitializing] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   
   // History Load State
   const [loadedReport, setLoadedReport] = useState<PitchReport | undefined>(undefined);
@@ -43,12 +44,13 @@ const App: React.FC = () => {
     setInitializing(true);
     setLoadedReport(undefined); // Clear old report
     setInterestTrajectory([]);
+    setCurrentSessionId(Date.now().toString());
     try {
       const intro = await startPitchSession(p, s);
       setInitialMessage(intro);
       setView(ViewState.PITCHING);
     } catch (e) {
-      alert("Failed to connect to investor AI.");
+      alert("连接投资人 AI 失败。");
       setView(ViewState.SETUP);
     } finally {
       setInitializing(false);
@@ -67,7 +69,7 @@ const App: React.FC = () => {
     if (!user || !persona || !startup) return;
 
     const newSession: PitchSession = {
-        id: Date.now().toString(),
+        id: currentSessionId || Date.now().toString(),
         userId: user.id,
         date: new Date().toISOString(),
         startup,
@@ -75,10 +77,27 @@ const App: React.FC = () => {
         messages: pitchHistory,
         score: finalScore,
         interestTrajectory,
-        report
+        report,
+        isCompleted: true
     };
     
     savePitchSession(newSession);
+  };
+
+  const handleProgressSave = (history: PitchMessage[], score: number, trajectory: number[]) => {
+    if (!user || !persona || !startup) return;
+    const session: PitchSession = {
+      id: currentSessionId || Date.now().toString(),
+      userId: user.id,
+      date: new Date().toISOString(),
+      startup,
+      persona,
+      messages: history,
+      score,
+      interestTrajectory: trajectory,
+      isCompleted: false
+    };
+    savePitchSession(session);
   };
 
   const handleRestart = () => {
@@ -106,7 +125,13 @@ const App: React.FC = () => {
       setFinalScore(session.score);
       setInterestTrajectory(session.interestTrajectory || []);
       setLoadedReport(session.report);
-      setView(ViewState.REPORT);
+      setCurrentSessionId(session.id);
+      if (session.isCompleted && session.report) {
+        setView(ViewState.REPORT);
+      } else {
+        setInitialMessage(session.messages[0]?.text || "继续会议。");
+        setView(ViewState.PITCHING);
+      }
   };
 
   const renderContent = () => {
@@ -114,8 +139,8 @@ const App: React.FC = () => {
       return (
          <div className="flex-1 flex flex-col items-center justify-center text-slate-400 min-h-[60vh]">
            <Loader2 className="w-12 h-12 animate-spin text-violet-500 mb-4" />
-           <p className="text-lg text-white font-medium">Connecting to Investor...</p>
-           <p className="text-sm">Reviewing your pitch deck</p>
+           <p className="text-lg text-white font-medium">正在连接投资人...</p>
+           <p className="text-sm">正在审阅你的路演材料</p>
          </div>
       );
     }
@@ -138,8 +163,12 @@ const App: React.FC = () => {
             persona={persona} 
             startup={startup} 
             initialMessage={initialMessage}
+            initialHistory={pitchHistory.length > 0 ? pitchHistory : undefined}
+            initialScore={finalScore || undefined}
+            initialTrajectory={interestTrajectory.length > 0 ? interestTrajectory : undefined}
             onFinish={handleFinishPitch}
             onExit={() => setView(ViewState.SETUP)}
+            onProgress={handleProgressSave}
           />
         );
       case ViewState.REPORT:

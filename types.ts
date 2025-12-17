@@ -65,4 +65,10 @@ export interface PitchSession {
   score: number;
   interestTrajectory?: number[]; // Array of scores over time for charts
   report?: PitchReport; // Optional, populated after analysis
+  isCompleted?: boolean; // Whether the simulation finished and has/awaits a report
+}
+
+export interface UserConfig {
+  savedStartup?: StartupDetails;
+  defaultPersonaId?: string;
 }

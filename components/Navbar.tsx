@@ -46,13 +46,13 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
-            <NavLink view={ViewState.LANDING} label="Home" />
-            <NavLink view={ViewState.ABOUT} label="About" />
-            <NavLink view={ViewState.PRICING} label="Pricing" />
+            <NavLink view={ViewState.LANDING} label="首页" />
+            <NavLink view={ViewState.ABOUT} label="关于" />
+            <NavLink view={ViewState.PRICING} label="定价" />
             
             {user ? (
               <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-700">
-                <NavLink view={ViewState.HISTORY} label="History" icon={History} />
+                <NavLink view={ViewState.HISTORY} label="历史" icon={History} />
                 
                 <button 
                   onClick={() => setView(ViewState.PROFILE)}
@@ -62,12 +62,12 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
                       : 'border-transparent hover:bg-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <img src={user.avatar} alt="Avatar" className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600" />
+                  <img src={user.avatar} alt="头像" className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600" />
                   <span className="text-sm font-medium text-slate-200 max-w-[100px] truncate">{user.name}</span>
                 </button>
               </div>
             ) : (
-              <NavLink view={ViewState.AUTH} label="Login / Register" />
+              <NavLink view={ViewState.AUTH} label="登录 / 注册" />
             )}
           </div>
 
@@ -78,7 +78,7 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
                     onClick={() => setView(ViewState.AUTH)}
                     className="text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg transition-colors shadow-lg shadow-violet-900/20"
                 >
-                    Sign In
+                    登录
                 </button>
             )}
 
@@ -97,12 +97,12 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
       {isOpen && (
         <div className="md:hidden bg-slate-900 border-b border-slate-800 animate-in slide-in-from-top-2">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col">
-            <NavLink view={ViewState.LANDING} label="Home" />
-            <NavLink view={ViewState.ABOUT} label="About" />
-            <NavLink view={ViewState.PRICING} label="Pricing" />
+            <NavLink view={ViewState.LANDING} label="首页" />
+            <NavLink view={ViewState.ABOUT} label="关于" />
+            <NavLink view={ViewState.PRICING} label="定价" />
             {user && (
               <>
-                <NavLink view={ViewState.HISTORY} label="History" icon={History} />
+                <NavLink view={ViewState.HISTORY} label="历史" icon={History} />
                 <button
                     onClick={() => {
                         setView(ViewState.PROFILE);
@@ -110,8 +110,8 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
                     }}
                     className="flex items-center gap-2 px-4 py-2 mt-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800"
                 >
-                  <img src={user.avatar} alt="Avatar" className="w-6 h-6 rounded-full" />
-                  Profile ({user.name})
+                  <img src={user.avatar} alt="头像" className="w-6 h-6 rounded-full" />
+                  个人中心（{user.name}）
                 </button>
                 <div className="border-t border-slate-800 my-2 pt-2">
                     <button
@@ -121,7 +121,7 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
                     }}
                     className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-800 rounded-lg flex items-center gap-2"
                     >
-                    <LogOut className="w-4 h-4" /> Logout
+                    <LogOut className="w-4 h-4" /> 退出登录
                     </button>
                 </div>
               </>

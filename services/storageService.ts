@@ -1,38 +1,80 @@
 import { PitchSession } from '../types';
 
-const DB_KEY_PREFIX = 'pitchperfect_db_';
+const API = '/api';
 
-// Simulate MongoDB save
-export const savePitchSession = async (session: PitchSession): Promise<void> => {
-  // In a real app, this would be: await axios.post('/api/pitches', session);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const key = `${DB_KEY_PREFIX}${session.userId}`;
-      const existingData = localStorage.getItem(key);
-      const history: PitchSession[] = existingData ? JSON.parse(existingData) : [];
-      
-      // Check if session already exists (update it), otherwise add new
-      const index = history.findIndex(h => h.id === session.id);
-      if (index >= 0) {
-        history[index] = session;
-      } else {
-        history.unshift(session); // Add to top
-      }
-      
-      localStorage.setItem(key, JSON.stringify(history));
-      resolve();
-    }, 300); // Simulate network latency
-  });
+const authHeaders = () => {
+  const token = localStorage.getItem('auth_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// Simulate MongoDB find query
-export const getUserHistory = async (userId: string): Promise<PitchSession[]> => {
-  // In a real app, this would be: await axios.get(`/api/pitches?userId=${userId}`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-        const key = `${DB_KEY_PREFIX}${userId}`;
-        const data = localStorage.getItem(key);
-        resolve(data ? JSON.parse(data) : []);
-    }, 300);
+export const savePitchSession = async (session: PitchSession): Promise<void> => {
+  const res = await fetch(`${API}/sessions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(session)
   });
+  if (!res.ok) throw new Error('保存失败');
+};
+
+export const getUserHistory = async (userId: string): Promise<PitchSession[]> => {
+  const res = await fetch(`${API}/sessions`, {
+    method: 'GET',
+    headers: { ...authHeaders() }
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data;
+};
+
+export const getUserConfig = async (): Promise<{ savedStartup?: { name: string; description: string }, defaultPersonaId?: string } | null> => {
+  const res = await fetch(`${API}/user/config`, {
+    method: 'GET',
+    headers: { ...authHeaders() }
+  });
+  if (!res.ok) return null;
+  return await res.json();
+};
+
+export const saveUserConfig = async (payload: { savedStartup?: { name: string; description: string }, defaultPersonaId?: string }): Promise<void> => {
+  const res = await fetch(`${API}/user/config`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error('配置保存失败');
+};
+
+export const listUserStartups = async (): Promise<{ items: { id: string; name: string; description: string }[], defaultStartupId: string | null } | null> => {
+  const res = await fetch(`${API}/user/startups`, {
+    method: 'GET',
+    headers: { ...authHeaders() }
+  });
+  if (!res.ok) return null;
+  return await res.json();
+};
+
+export const upsertUserStartup = async (payload: { id?: string; name: string; description: string }): Promise<void> => {
+  const res = await fetch(`${API}/user/startups`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error('保存创业资料失败');
+};
+
+export const deleteUserStartup = async (id: string): Promise<void> => {
+  const res = await fetch(`${API}/user/startups/${id}`, {
+    method: 'DELETE',
+    headers: { ...authHeaders() }
+  });
+  if (!res.ok) throw new Error('删除创业资料失败');
+};
+
+export const setDefaultUserStartup = async (id: string): Promise<void> => {
+  const res = await fetch(`${API}/user/startups/default`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ id })
+  });
+  if (!res.ok) throw new Error('设置默认创业资料失败');
 };

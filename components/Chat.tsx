@@ -9,16 +9,21 @@ interface Props {
   initialMessage: string;
   onFinish: (history: PitchMessage[], finalScore: number, interestTrajectory: number[]) => void;
   onExit: () => void;
+  onProgress?: (history: PitchMessage[], score: number, trajectory: number[]) => void;
+  initialHistory?: PitchMessage[];
+  initialScore?: number;
+  initialTrajectory?: number[];
 }
 
-export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, onFinish, onExit }) => {
-  const [messages, setMessages] = useState<PitchMessage[]>([
-    { id: 'init', role: 'model', text: initialMessage }
-  ]);
+export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, onFinish, onExit, onProgress, initialHistory, initialScore, initialTrajectory }) => {
+  const [messages, setMessages] = useState<PitchMessage[]>(() => {
+    if (initialHistory && initialHistory.length > 0) return initialHistory;
+    return [{ id: 'init', role: 'model', text: initialMessage }];
+  });
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [interestScore, setInterestScore] = useState(50);
-  const [interestHistory, setInterestHistory] = useState<number[]>([50]); // Start at 50
+  const [interestScore, setInterestScore] = useState(initialScore ?? 50);
+  const [interestHistory, setInterestHistory] = useState<number[]>(initialTrajectory && initialTrajectory.length > 0 ? initialTrajectory : [initialScore ?? 50]); // Start at provided or 50
   const [isDealbreaker, setIsDealbreaker] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -70,7 +75,11 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
         interestChange: response.interest_change
       };
 
-      setMessages(prev => [...prev, botMsg]);
+      setMessages(prev => {
+        const next = [...prev, botMsg];
+        onProgress && onProgress(next, newScore, [...interestHistory, newScore]);
+        return next;
+      });
 
       if (response.is_dealbreaker || newScore <= 10) {
         setIsDealbreaker(true);
@@ -110,7 +119,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
 
           <div className="flex-1 max-w-xs hidden md:block">
              <div className="flex justify-between text-xs font-bold uppercase text-slate-500 mb-1">
-               <span>Interest Level</span>
+               <span>兴趣水平</span>
                <span className={`transition-colors duration-500 ${interestScore > 50 ? 'text-emerald-400' : 'text-amber-400'}`}>{interestScore}%</span>
              </div>
              <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
@@ -124,7 +133,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
           <button 
             onClick={onExit} 
             className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors border border-transparent hover:border-slate-700"
-            title="Exit Session"
+            title="退出会话"
           >
             <X className="w-6 h-6" />
           </button>
@@ -160,7 +169,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                   {msg.role === 'model' && msg.interestChange !== undefined && index > 0 && (
                     <span className={`text-xs mt-2 ml-2 font-mono font-bold flex items-center gap-1 animate-in fade-in slide-in-from-top-2 ${msg.interestChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {msg.interestChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {msg.interestChange > 0 ? '+' : ''}{msg.interestChange}% Interest
+                        兴趣 {msg.interestChange > 0 ? '+' : ''}{msg.interestChange}%
                     </span>
                   )}
               </div>
@@ -184,8 +193,8 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                   <AlertCircle className="w-8 h-8 text-red-500" />
               </div>
               <div>
-                <p className="font-bold text-lg text-white">Pitch Terminated</p>
-                <p className="opacity-80 text-sm">The investor has lost interest. Check your report to improve.</p>
+                <p className="font-bold text-lg text-white">路演已终止</p>
+                <p className="opacity-80 text-sm">投资人已失去兴趣。查看你的报告以改进。</p>
               </div>
             </div>
           )}
@@ -202,7 +211,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
               onClick={() => onFinish(messages, interestScore, interestHistory)}
               className="w-full bg-white text-slate-900 font-bold py-4 rounded-xl hover:bg-slate-200 transition-all shadow-lg hover:shadow-white/20 active:scale-[0.99] flex items-center justify-center gap-2"
             >
-              View Performance Report
+              查看表现报告
             </button>
           ) : (
             <div className="flex gap-3">
@@ -212,7 +221,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Type your response..."
+                placeholder="输入你的回答…"
                 className="flex-1 bg-slate-900 text-white border-slate-800 rounded-xl px-6 py-4 focus:ring-2 focus:ring-violet-500 outline-none placeholder:text-slate-600 text-base shadow-inner transition-all focus:border-violet-500/50"
                 disabled={loading}
               />
@@ -232,7 +241,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                     onClick={() => onFinish(messages, interestScore, interestHistory)}
                     className="text-xs text-slate-600 hover:text-slate-400 transition-colors py-2 px-4 rounded-full hover:bg-slate-900"
                 >
-                    End Meeting Early & Get Report
+                    提前结束并获取报告
                 </button>
               </div>
           )}

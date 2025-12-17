@@ -40,8 +40,8 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
             <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="w-8 h-8 text-slate-500" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">No History Yet</h2>
-            <p className="text-slate-400">Complete your first simulation to see your records here.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">暂无历史记录</h2>
+            <p className="text-slate-400">完成首次模拟后，这里会显示你的记录。</p>
         </div>
     );
   }
@@ -50,12 +50,13 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
     <div className="max-w-4xl mx-auto p-6 md:p-12">
       <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
         <Clock className="w-8 h-8 text-violet-400" />
-        Pitch History
+        路演历史
       </h2>
 
       <div className="grid gap-4">
         {sessions.map((session) => {
             const isFunded = session.report?.funding_decision === 'Funded';
+            const isIncomplete = !session.isCompleted || !session.report;
             return (
                 <div 
                     key={session.id}
@@ -64,10 +65,11 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
                 >
                     <div className="flex items-center gap-6">
                         {/* Status Icon */}
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-                            isFunded ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${isIncomplete
+                            ? 'bg-violet-500/10 text-violet-400'
+                            : (isFunded ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500')
                         }`}>
-                            {isFunded ? <Trophy className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
+                            {isIncomplete ? <Clock className="w-6 h-6" /> : (isFunded ? <Trophy className="w-6 h-6" /> : <XCircle className="w-6 h-6" />)}
                         </div>
 
                         {/* Details */}
@@ -82,6 +84,11 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
                                     <Calendar className="w-3 h-3" />
                                     {new Date(session.date).toLocaleDateString()}
                                 </span>
+                                {isIncomplete && (
+                                  <span className="px-2 py-0.5 text-xs rounded-lg bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                                    未完成
+                                  </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -89,13 +96,17 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
                     {/* Score */}
                     <div className="flex items-center gap-6">
                         <div className="text-right">
-                            <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Score</div>
-                            <div className={`text-2xl font-bold ${
-                                session.score >= 70 ? 'text-emerald-400' : 
-                                session.score >= 40 ? 'text-amber-400' : 'text-red-400'
-                            }`}>
-                                {session.score}
-                            </div>
+                            <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">{isIncomplete ? '当前进度' : '得分'}</div>
+                            {isIncomplete ? (
+                              <div className="text-sm font-bold text-violet-300">进行中 · {Math.round(session.score)}%</div>
+                            ) : (
+                              <div className={`text-2xl font-bold ${
+                                  session.score >= 70 ? 'text-emerald-400' : 
+                                  session.score >= 40 ? 'text-amber-400' : 'text-red-400'
+                              }`}>
+                                  {session.score}
+                              </div>
+                            )}
                         </div>
                         <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors" />
                     </div>
