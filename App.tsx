@@ -9,6 +9,7 @@ import { About } from './components/About';
 import { Auth } from './components/Auth';
 import { History } from './components/History';
 import { Profile } from './components/Profile';
+import { Pricing } from './components/Pricing';
 import { ViewState, Persona, StartupDetails, PitchMessage, User, PitchReport, PitchSession } from './types';
 import { startPitchSession } from './services/geminiService';
 import { getCurrentUser, logout } from './services/authService';
@@ -25,6 +26,7 @@ const App: React.FC = () => {
   const [initialMessage, setInitialMessage] = useState('');
   const [pitchHistory, setPitchHistory] = useState<PitchMessage[]>([]);
   const [finalScore, setFinalScore] = useState(0);
+  const [interestTrajectory, setInterestTrajectory] = useState<number[]>([]);
   const [initializing, setInitializing] = useState(false);
   
   // History Load State
@@ -40,6 +42,7 @@ const App: React.FC = () => {
     setStartup(s);
     setInitializing(true);
     setLoadedReport(undefined); // Clear old report
+    setInterestTrajectory([]);
     try {
       const intro = await startPitchSession(p, s);
       setInitialMessage(intro);
@@ -52,9 +55,10 @@ const App: React.FC = () => {
     }
   };
 
-  const handleFinishPitch = (history: PitchMessage[], score: number) => {
+  const handleFinishPitch = (history: PitchMessage[], score: number, trajectory: number[]) => {
     setPitchHistory(history);
     setFinalScore(score);
+    setInterestTrajectory(trajectory);
     setView(ViewState.REPORT);
   };
 
@@ -70,6 +74,7 @@ const App: React.FC = () => {
         persona,
         messages: pitchHistory,
         score: finalScore,
+        interestTrajectory,
         report
     };
     
@@ -99,6 +104,7 @@ const App: React.FC = () => {
       setStartup(session.startup);
       setPitchHistory(session.messages);
       setFinalScore(session.score);
+      setInterestTrajectory(session.interestTrajectory || []);
       setLoadedReport(session.report);
       setView(ViewState.REPORT);
   };
@@ -119,6 +125,8 @@ const App: React.FC = () => {
         return <Landing onStart={() => setView(user ? ViewState.SETUP : ViewState.AUTH)} />;
       case ViewState.ABOUT:
         return <About />;
+      case ViewState.PRICING:
+        return <Pricing onSubscribe={() => setView(ViewState.AUTH)} />;
       case ViewState.AUTH:
         return <Auth onSuccess={handleAuthSuccess} />;
       case ViewState.SETUP:
@@ -139,6 +147,7 @@ const App: React.FC = () => {
           <FeedbackReport 
             messages={pitchHistory} 
             finalScore={finalScore} 
+            interestTrajectory={interestTrajectory}
             onRestart={handleRestart}
             existingReport={loadedReport}
             onReportGenerated={handleSaveSession}

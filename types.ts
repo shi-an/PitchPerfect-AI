@@ -7,6 +7,7 @@ export enum ViewState {
   REPORT = 'REPORT',
   HISTORY = 'HISTORY',
   PROFILE = 'PROFILE',
+  PRICING = 'PRICING',
 }
 
 export interface User {
@@ -14,6 +15,7 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
+  plan?: 'FREE' | 'PRO' | 'ENTERPRISE';
 }
 
 export interface Persona {
@@ -61,5 +63,6 @@ export interface PitchSession {
   persona: Persona;
   messages: PitchMessage[];
   score: number;
+  interestTrajectory?: number[]; // Array of scores over time for charts
   report?: PitchReport; // Optional, populated after analysis
 }

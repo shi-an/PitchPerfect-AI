@@ -1,6 +1,6 @@
 import React from 'react';
 import { ViewState, User } from '../types';
-import { Menu, X, Rocket, LogOut, User as UserIcon, History } from 'lucide-react';
+import { Menu, X, Rocket, LogOut, User as UserIcon, History, CreditCard } from 'lucide-react';
 
 interface Props {
   currentView: ViewState;
@@ -48,6 +48,7 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
           <div className="hidden md:flex items-center space-x-2">
             <NavLink view={ViewState.LANDING} label="Home" />
             <NavLink view={ViewState.ABOUT} label="About" />
+            <NavLink view={ViewState.PRICING} label="Pricing" />
             
             {user ? (
               <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-700">
@@ -98,6 +99,7 @@ export const Navbar: React.FC<Props> = ({ currentView, setView, user, onLogout }
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col">
             <NavLink view={ViewState.LANDING} label="Home" />
             <NavLink view={ViewState.ABOUT} label="About" />
+            <NavLink view={ViewState.PRICING} label="Pricing" />
             {user && (
               <>
                 <NavLink view={ViewState.HISTORY} label="History" icon={History} />

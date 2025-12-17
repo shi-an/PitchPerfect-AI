@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { generateAnalysisReport } from '../services/geminiService';
 import { PitchReport, PitchMessage } from '../types';
-import { Loader2, CheckCircle, XCircle, Trophy, RefreshCw, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Trophy, RefreshCw, AlertCircle, LineChart as ChartIcon } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts';
 
 interface Props {
   messages: PitchMessage[];
   finalScore: number;
+  interestTrajectory?: number[];
   onRestart: () => void;
   existingReport?: PitchReport; // Support loading history
   onReportGenerated?: (report: PitchReport) => void; // Callback to save history
 }
 
-export const FeedbackReport: React.FC<Props> = ({ messages, finalScore, onRestart, existingReport, onReportGenerated }) => {
+export const FeedbackReport: React.FC<Props> = ({ messages, finalScore, interestTrajectory, onRestart, existingReport, onReportGenerated }) => {
   const [report, setReport] = useState<PitchReport | null>(existingReport || null);
 
   useEffect(() => {
@@ -44,6 +46,12 @@ export const FeedbackReport: React.FC<Props> = ({ messages, finalScore, onRestar
   }
 
   const isFunded = report.funding_decision === 'Funded';
+  
+  // Prepare chart data
+  const chartData = interestTrajectory ? interestTrajectory.map((score, index) => ({
+      turn: index,
+      score: score
+  })) : [];
 
   return (
     <div className="max-w-5xl mx-auto p-6 md:p-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -68,6 +76,37 @@ export const FeedbackReport: React.FC<Props> = ({ messages, finalScore, onRestar
       <div className="grid md:grid-cols-12 gap-8">
         {/* Main Feedback - Left Col */}
         <div className="md:col-span-8 space-y-8">
+            
+            {/* Interest Chart */}
+            {chartData.length > 0 && (
+                <div className="bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
+                    <h3 className="text-white font-bold mb-6 uppercase text-sm tracking-wider flex items-center gap-2">
+                        <ChartIcon className="w-4 h-4 text-violet-400" />
+                        Engagement Trajectory
+                    </h3>
+                    <div className="h-64 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                                <XAxis dataKey="turn" stroke="#475569" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#475569" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
+                                    itemStyle={{ color: '#a78bfa' }}
+                                />
+                                <Area type="monotone" dataKey="score" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            )}
+
             <div className="bg-slate-900/50 p-8 rounded-3xl border border-slate-800">
                 <h3 className="text-violet-400 font-bold mb-4 uppercase text-sm tracking-wider flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-violet-400" />

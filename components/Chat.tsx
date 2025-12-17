@@ -7,7 +7,7 @@ interface Props {
   persona: Persona;
   startup: StartupDetails;
   initialMessage: string;
-  onFinish: (history: PitchMessage[], finalScore: number) => void;
+  onFinish: (history: PitchMessage[], finalScore: number, interestTrajectory: number[]) => void;
   onExit: () => void;
 }
 
@@ -18,6 +18,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [interestScore, setInterestScore] = useState(50);
+  const [interestHistory, setInterestHistory] = useState<number[]>([50]); // Start at 50
   const [isDealbreaker, setIsDealbreaker] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -60,6 +61,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
       // Update Score
       const newScore = Math.max(0, Math.min(100, interestScore + response.interest_change));
       setInterestScore(newScore);
+      setInterestHistory(prev => [...prev, newScore]);
 
       const botMsg: PitchMessage = {
         id: (Date.now() + 1).toString(),
@@ -197,7 +199,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
         <div className="max-w-4xl mx-auto">
           {isDealbreaker ? (
             <button 
-              onClick={() => onFinish(messages, interestScore)}
+              onClick={() => onFinish(messages, interestScore, interestHistory)}
               className="w-full bg-white text-slate-900 font-bold py-4 rounded-xl hover:bg-slate-200 transition-all shadow-lg hover:shadow-white/20 active:scale-[0.99] flex items-center justify-center gap-2"
             >
               View Performance Report
@@ -227,7 +229,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
           {!isDealbreaker && messages.length > 2 && (
               <div className="text-center mt-3">
                 <button 
-                    onClick={() => onFinish(messages, interestScore)}
+                    onClick={() => onFinish(messages, interestScore, interestHistory)}
                     className="text-xs text-slate-600 hover:text-slate-400 transition-colors py-2 px-4 rounded-full hover:bg-slate-900"
                 >
                     End Meeting Early & Get Report
