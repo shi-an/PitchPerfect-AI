@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { PitchSession, User } from '../types';
-import { getUserHistory } from '../services/storageService';
-import { Calendar, ChevronRight, Trophy, XCircle, Clock, Search } from 'lucide-react';
+import { getUserHistory, deletePitchSession } from '../services/storageService';
+import { Calendar, ChevronRight, Trophy, XCircle, Clock, Search, Trash2, LayoutGrid, Target, BookOpen } from 'lucide-react';
 
 interface Props {
   user: User;
   onSelectSession: (session: PitchSession) => void;
+  initialFilter?: 'all' | 'pitch' | 'mentor';
 }
 
-export const History: React.FC<Props> = ({ user, onSelectSession }) => {
+export const History: React.FC<Props> = ({ user, onSelectSession, initialFilter = 'all' }) => {
   const [sessions, setSessions] = useState<PitchSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'pitch' | 'mentor'>(initialFilter);
+
+  useEffect(() => {
+    setFilter(initialFilter);
+  }, [initialFilter]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -20,6 +26,25 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
     };
     loadData();
   }, [user.id]);
+
+  const filteredSessions = sessions.filter(s => {
+      if (filter === 'pitch') return s.persona.id !== 'mentor';
+      if (filter === 'mentor') return s.persona.id === 'mentor';
+      return true;
+  });
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!confirm('确定要删除这条历史记录吗？')) return;
+    try {
+      await deletePitchSession(id);
+      setSessions(prev => prev.filter(s => s.id !== id));
+      // Dispatch event to update sidebar
+      window.dispatchEvent(new Event('history-updated'));
+    } catch (err) {
+      alert('删除失败，请重试');
+    }
+  };
 
   if (loading) {
     return (
@@ -34,27 +59,48 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
     );
   }
 
-  if (sessions.length === 0) {
-    return (
-        <div className="max-w-4xl mx-auto p-12 text-center">
+  return (
+    <div className="h-full overflow-y-auto">
+    <div className="max-w-4xl mx-auto p-6 md:p-12">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+            <Clock className="w-8 h-8 text-violet-400" />
+            路演历史
+        </h2>
+        
+        <div className="flex bg-slate-800 p-1 rounded-xl">
+            <button 
+                onClick={() => setFilter('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'all' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+                <LayoutGrid className="w-4 h-4" /> 全部
+            </button>
+            <button 
+                onClick={() => setFilter('pitch')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'pitch' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+                <Target className="w-4 h-4" /> 结果
+            </button>
+            <button 
+                onClick={() => setFilter('mentor')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'mentor' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            >
+                <BookOpen className="w-4 h-4" /> 指导
+            </button>
+        </div>
+      </div>
+
+      {filteredSessions.length === 0 ? (
+         <div className="text-center p-12">
             <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="w-8 h-8 text-slate-500" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">暂无历史记录</h2>
             <p className="text-slate-400">完成首次模拟后，这里会显示你的记录。</p>
         </div>
-    );
-  }
-
-  return (
-    <div className="max-w-4xl mx-auto p-6 md:p-12">
-      <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
-        <Clock className="w-8 h-8 text-violet-400" />
-        路演历史
-      </h2>
-
+      ) : (
       <div className="grid gap-4">
-        {sessions.map((session) => {
+        {filteredSessions.map((session) => {
             const isFunded = session.report?.funding_decision === 'Funded';
             const isIncomplete = !session.isCompleted || !session.report;
             return (
@@ -108,12 +154,21 @@ export const History: React.FC<Props> = ({ user, onSelectSession }) => {
                               </div>
                             )}
                         </div>
+                        <button 
+                            onClick={(e) => handleDelete(e, session.id)}
+                            className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
+                            title="删除记录"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                        </button>
                         <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors" />
                     </div>
                 </div>
             );
         })}
       </div>
+      )}
+    </div>
     </div>
   );
 };

@@ -21,7 +21,8 @@ export const Auth: React.FC<Props> = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    role: 'FOUNDER'
   });
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -35,7 +36,7 @@ export const Auth: React.FC<Props> = ({ onSuccess }) => {
     setResetCompleted(false);
     setResetToken('');
     setConfirmPassword('');
-    setFormData({ name: '', email: '', password: '' });
+    setFormData({ name: '', email: '', password: '', role: 'FOUNDER' });
   }, [mode]);
 
   // Auto-detect URL token and switch to RESET
@@ -138,7 +139,7 @@ export const Auth: React.FC<Props> = ({ onSuccess }) => {
         const user = await login(formData.email, formData.password);
         onSuccess(user);
       } else {
-        const user = await register(formData.name, formData.email, formData.password);
+        const user = await register(formData.name, formData.email, formData.password, formData.role);
         onSuccess(user);
       }
     } catch (err: any) {
@@ -259,6 +260,19 @@ export const Auth: React.FC<Props> = ({ onSuccess }) => {
               <AlertCircle className="w-3 h-3" /> {fieldErrors.name}
             </p>
           )}
+
+          <div className="relative">
+             <select
+                value={formData.role}
+                onChange={e => handleInputChange('role', e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 text-white outline-none focus:ring-2 focus:ring-violet-500 appearance-none"
+             >
+                <option value="FOUNDER">我是创业者 (Founder)</option>
+                <option value="STUDENT">我是学生 (Student)</option>
+                <option value="INVESTOR">我是投资人 (Investor)</option>
+                <option value="OTHER">其他 (Other)</option>
+             </select>
+          </div>
         </div>
       )}
       

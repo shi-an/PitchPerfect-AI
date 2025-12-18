@@ -17,9 +17,7 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.DEEPSEEK_API_KEY': JSON.stringify(env.DEEPSEEK_API_KEY),
+        // Expose only non-sensitive env vars if needed
         'process.env.MODEL_PROVIDER': JSON.stringify(env.MODEL_PROVIDER || 'deepseek')
       },
       resolve: {

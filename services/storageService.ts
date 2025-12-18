@@ -26,6 +26,41 @@ export const getUserHistory = async (userId: string): Promise<PitchSession[]> =>
   return data;
 };
 
+export const getPitchSession = async (id: string): Promise<PitchSession | null> => {
+    const res = await fetch(`${API}/sessions/${id}`, {
+      method: 'GET',
+      headers: { ...authHeaders() }
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  };
+
+export const deletePitchSession = async (id: string): Promise<void> => {
+  const res = await fetch(`${API}/sessions/${id}`, {
+    method: 'DELETE',
+    headers: { ...authHeaders() }
+  });
+  if (!res.ok) throw new Error('删除失败');
+};
+
+export const pinPitchSession = async (id: string, isPinned: boolean): Promise<void> => {
+  const res = await fetch(`${API}/sessions/${id}/pin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ isPinned })
+  });
+  if (!res.ok) throw new Error('操作失败');
+};
+
+export const renamePitchSession = async (id: string, customName: string): Promise<void> => {
+  const res = await fetch(`${API}/sessions/${id}/rename`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ customName })
+  });
+  if (!res.ok) throw new Error('操作失败');
+};
+
 export const getUserConfig = async (): Promise<{ savedStartup?: { name: string; description: string }, defaultPersonaId?: string } | null> => {
   const res = await fetch(`${API}/user/config`, {
     method: 'GET',

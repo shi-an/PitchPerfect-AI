@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
@@ -17,18 +18,18 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">产品</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-slate-400 hover:text-violet-400 text-sm">功能</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-violet-400 text-sm">定价</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-violet-400 text-sm">API</a></li>
+              <li><Link to="/" className="text-slate-400 hover:text-violet-400 text-sm transition-colors">功能</Link></li>
+              <li><Link to="/pricing" className="text-slate-400 hover:text-violet-400 text-sm transition-colors">定价</Link></li>
+              <li><Link to="/api-docs" className="text-slate-400 hover:text-violet-400 text-sm transition-colors">API</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">法律</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-slate-400 hover:text-violet-400 text-sm">隐私</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-violet-400 text-sm">条款</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-violet-400 text-sm">联系</a></li>
+              <li><Link to="/privacy" className="text-slate-400 hover:text-violet-400 text-sm transition-colors">隐私</Link></li>
+              <li><Link to="/terms" className="text-slate-400 hover:text-violet-400 text-sm transition-colors">条款</Link></li>
+              <li><Link to="/about" className="text-slate-400 hover:text-violet-400 text-sm transition-colors">联系</Link></li>
             </ul>
           </div>
         </div>
@@ -36,9 +37,9 @@ export const Footer: React.FC = () => {
         <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-500 text-xs">© 2024 PitchPerfect AI. 保留所有权利。</p>
           <div className="flex gap-4">
-            <Github className="w-5 h-5 text-slate-500 hover:text-white cursor-pointer" />
-            <Twitter className="w-5 h-5 text-slate-500 hover:text-white cursor-pointer" />
-            <Linkedin className="w-5 h-5 text-slate-500 hover:text-white cursor-pointer" />
+            <a href="#" className="text-slate-500 hover:text-white transition-colors"><Github className="w-5 h-5" /></a>
+            <a href="#" className="text-slate-500 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
+            <a href="#" className="text-slate-500 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
           </div>
         </div>
       </div>

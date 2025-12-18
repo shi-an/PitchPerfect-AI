@@ -40,7 +40,7 @@ export const FeedbackReport: React.FC<Props> = ({ messages, finalScore, interest
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-300">
         <Loader2 className="w-16 h-16 animate-spin text-violet-500 mb-6" />
         <h2 className="text-2xl font-bold text-white">正在生成条款清单</h2>
-        <p className="text-slate-500 mt-2">Gemini 2.5 正在分析你的表现…</p>
+        <p className="text-slate-500 mt-2">AI 正在分析你的表现…</p>
       </div>
     );
   }

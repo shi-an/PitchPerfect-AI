@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, TrendingUp, TrendingDown, AlertCircle, X, StopCircle } from 'lucide-react';
+import { Send, TrendingUp, TrendingDown, AlertCircle, X, StopCircle, Info } from 'lucide-react';
 import { sendPitchMessage } from '../services/geminiService';
 import { Persona, PitchMessage, StartupDetails } from '../types';
 
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, onFinish, onExit, onProgress, initialHistory, initialScore, initialTrajectory }) => {
+  const [showInfo, setShowInfo] = useState(false);
   const [messages, setMessages] = useState<PitchMessage[]>(() => {
     if (initialHistory && initialHistory.length > 0) return initialHistory;
     return [{ id: 'init', role: 'model', text: initialMessage }];
@@ -54,7 +55,8 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
       text: userText
     };
 
-    setMessages(prev => [...prev, newMsg]);
+    const nextMessages = [...messages, newMsg];
+    setMessages(nextMessages);
 
     try {
       // Small artificial delay for "thinking" feel if API is too fast
@@ -66,7 +68,8 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
       // Update Score
       const newScore = Math.max(0, Math.min(100, interestScore + response.interest_change));
       setInterestScore(newScore);
-      setInterestHistory(prev => [...prev, newScore]);
+      const nextTrajectory = [...interestHistory, newScore];
+      setInterestHistory(nextTrajectory);
 
       const botMsg: PitchMessage = {
         id: (Date.now() + 1).toString(),
@@ -75,11 +78,11 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
         interestChange: response.interest_change
       };
 
-      setMessages(prev => {
-        const next = [...prev, botMsg];
-        onProgress && onProgress(next, newScore, [...interestHistory, newScore]);
-        return next;
-      });
+      const updatedMessages = [...nextMessages, botMsg];
+      setMessages(updatedMessages);
+      
+      // Auto-save progress
+      onProgress && onProgress(updatedMessages, newScore, nextTrajectory);
 
       if (response.is_dealbreaker || newScore <= 10) {
         setIsDealbreaker(true);
@@ -101,10 +104,27 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
     <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-slate-950 relative overflow-hidden">
       
       {/* Background Ambient Elements */}
-      <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 pointer-events-none transition-colors duration-1000 ${interestScore > 50 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+      <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 pointer-events-none transition-colors duration-1000 ${
+        persona.id === 'mentor' ? 'bg-emerald-500' : (interestScore > 50 ? 'bg-emerald-500' : 'bg-red-500')
+      }`} />
       
       {/* Header / Gauge */}
-      <div className="bg-slate-900/90 backdrop-blur-md p-4 border-b border-slate-800 sticky top-0 z-20 shadow-xl transition-all duration-300">
+      <div className="bg-slate-900/90 backdrop-blur-md p-4 border-b border-slate-800 sticky top-0 z-20 shadow-xl transition-all duration-300 relative">
+        {showInfo && (
+            <div className="absolute top-full left-4 bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-xl z-30 w-64 animate-in slide-in-from-top-2">
+                <h4 className="font-bold text-white text-sm mb-2">项目资料</h4>
+                <div className="space-y-2">
+                    <div>
+                        <div className="text-xs text-slate-500 uppercase">名称</div>
+                        <div className="text-sm text-slate-300">{startup.name}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-slate-500 uppercase">简介</div>
+                        <div className="text-sm text-slate-300 line-clamp-4">{startup.description}</div>
+                    </div>
+                </div>
+            </div>
+        )}
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-6">
           
           <div className="flex items-center gap-4 flex-1">
@@ -112,12 +132,22 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                {persona.name.charAt(0)}
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white leading-tight">{persona.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-white leading-tight">{persona.name}</h3>
+                <button 
+                    onClick={() => setShowInfo(!showInfo)}
+                    className="text-slate-500 hover:text-violet-400 transition-colors"
+                >
+                    <Info className="w-4 h-4" />
+                </button>
+              </div>
               <p className="text-xs text-slate-400">{persona.role}</p>
             </div>
           </div>
 
           <div className="flex-1 max-w-xs hidden md:block">
+             {persona.id !== 'mentor' && (
+             <>
              <div className="flex justify-between text-xs font-bold uppercase text-slate-500 mb-1">
                <span>兴趣水平</span>
                <span className={`transition-colors duration-500 ${interestScore > 50 ? 'text-emerald-400' : 'text-amber-400'}`}>{interestScore}%</span>
@@ -128,6 +158,8 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                   style={{ width: `${interestScore}%` }}
                 />
              </div>
+             </>
+             )}
           </div>
 
           <button 
@@ -140,6 +172,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
         </div>
         
         {/* Mobile Gauge */}
+        {persona.id !== 'mentor' && (
         <div className="md:hidden mt-4">
            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
               <div 
@@ -148,6 +181,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
               />
            </div>
         </div>
+        )}
       </div>
 
       {/* Chat Area */}
@@ -166,7 +200,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
                     {msg.text}
                   </div>
                   {/* Interest Indicator for Bot Messages */}
-                  {msg.role === 'model' && msg.interestChange !== undefined && index > 0 && (
+                  {msg.role === 'model' && msg.interestChange !== undefined && index > 0 && persona.id !== 'mentor' && (
                     <span className={`text-xs mt-2 ml-2 font-mono font-bold flex items-center gap-1 animate-in fade-in slide-in-from-top-2 ${msg.interestChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {msg.interestChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                         兴趣 {msg.interestChange > 0 ? '+' : ''}{msg.interestChange}%

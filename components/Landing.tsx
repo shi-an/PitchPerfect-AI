@@ -18,7 +18,7 @@ export const Landing: React.FC<Props> = ({ onStart }) => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
             </span>
-            现已支持 Gemini 2.5 与 DeepSeek 集成
+            现已支持多模型智能集成
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-8 leading-tight">

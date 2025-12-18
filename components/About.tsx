@@ -43,9 +43,9 @@ export const About: React.FC = () => {
           平台支持模型互操作，充分发挥不同模型在推理与角色扮演上的优势。
         </p>
         <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500 font-mono">
-         <span className="bg-slate-900 px-3 py-1 rounded border border-slate-700">Gemini 2.5 Flash</span>
-          <span className="bg-slate-900 px-3 py-1 rounded border border-slate-700">DeepSeek R1（即将上线）</span>
-          <span className="bg-slate-900 px-3 py-1 rounded border border-slate-700">GPT-4o（企业版）</span>
+         <span className="bg-slate-900 px-3 py-1 rounded border border-slate-700">高级模型 (Advanced)</span>
+          <span className="bg-slate-900 px-3 py-1 rounded border border-slate-700">标准模型 (Standard)</span>
+          <span className="bg-slate-900 px-3 py-1 rounded border border-slate-700">企业专属模型</span>
       </div>
       </div>
     </div>

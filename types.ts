@@ -16,6 +16,7 @@ export interface User {
   email: string;
   avatar?: string;
   plan?: 'FREE' | 'PRO' | 'ENTERPRISE';
+  role?: 'FOUNDER' | 'STUDENT' | 'INVESTOR' | 'OTHER';
 }
 
 export interface Persona {
@@ -66,6 +67,8 @@ export interface PitchSession {
   interestTrajectory?: number[]; // Array of scores over time for charts
   report?: PitchReport; // Optional, populated after analysis
   isCompleted?: boolean; // Whether the simulation finished and has/awaits a report
+  isPinned?: boolean;
+  customName?: string;
 }
 
 export interface UserConfig {
