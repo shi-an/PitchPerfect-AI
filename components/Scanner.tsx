@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Rocket, Briefcase, Glasses, User, ArrowRight, ChevronRight, Plus, Bot, Settings2, Trash2, Save, Edit, BookOpen } from 'lucide-react';
+import { Rocket, Briefcase, Glasses, User, ArrowRight, ChevronRight, Plus, Bot, Settings2, Trash2, Save, Edit, BookOpen, Target, Heart, Globe, Scale, PenTool } from 'lucide-react';
 import { Persona, StartupDetails } from '../types';
 import { getUserConfig, saveUserConfig, listUserStartups, upsertUserStartup, deleteUserStartup } from '../services/storageService';
 import { useUI } from '../contexts/UIContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   onStart: (persona: Persona, details: StartupDetails) => void;
@@ -37,6 +39,42 @@ const PERSONAS: Persona[] = [
     color: 'bg-blue-500'
   },
   {
+    id: 'pragmatist',
+    name: '罗伯特·实干',
+    role: '传统实业家',
+    description: '看重现金流和盈利能力，不相信烧钱扩张的故事。',
+    style: '保守、务实、关注回本周期。',
+    icon: 'target',
+    color: 'bg-amber-600'
+  },
+  {
+    id: 'social',
+    name: '玛丽亚·影响力',
+    role: '影响力投资人',
+    description: '关注ESG（环境、社会、治理）和可持续发展目标。',
+    style: '温和、坚定、关注社会价值。',
+    icon: 'heart',
+    color: 'bg-pink-500'
+  },
+  {
+    id: 'global',
+    name: '陈·出海',
+    role: '跨境投资人',
+    description: '专注全球化市场，关心本地化策略和地缘政治风险。',
+    style: '宏观视野、跨文化、关注合规。',
+    icon: 'globe',
+    color: 'bg-indigo-500'
+  },
+  {
+    id: 'legal',
+    name: '索尔·法务',
+    role: '风控专家',
+    description: '寻找法律漏洞、知识产权风险和合规隐患。',
+    style: '严谨、挑剔、逻辑缜密。',
+    icon: 'scale',
+    color: 'bg-slate-500'
+  },
+  {
     id: 'mentor',
     name: '莎拉·导师',
     role: '创业导师',
@@ -48,12 +86,26 @@ const PERSONAS: Persona[] = [
 ];
 
 export const SetupScreen: React.FC<Props> = ({ onStart }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { toast, confirm } = useUI();
   const [step, setStep] = useState<1 | 2>(1);
   const [details, setDetails] = useState<StartupDetails>({ name: '', description: '' });
   const [selectedPersona, setSelectedPersona] = useState<Persona>(PERSONAS[0]);
   const [savedStartups, setSavedStartups] = useState<{ id: string; name: string; description: string }[]>([]);
   const [selectedStartupId, setSelectedStartupId] = useState<string | null>(null);
+  
+  // Custom Persona State
+  const [showCustomPersona, setShowCustomPersona] = useState(false);
+  const [customPersona, setCustomPersona] = useState<Persona>({
+      id: 'custom',
+      name: '',
+      role: '自定义导师',
+      description: '',
+      style: '',
+      icon: 'pen-tool',
+      color: 'bg-indigo-600'
+  });
   
   // Model Selection State
   const [modelProvider, setModelProvider] = useState<string>(() => {
@@ -167,6 +219,19 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
       toast.info('项目已删除');
   };
 
+  const handleCustomPersonaSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (user?.plan === 'FREE') {
+          navigate('/pricing');
+          return;
+      }
+      if (!customPersona.name || !customPersona.description || !customPersona.style) return;
+      
+      const newPersona = { ...customPersona, id: `custom_${Date.now()}` };
+      setSelectedPersona(newPersona);
+      setShowCustomPersona(false);
+  };
+
   const handleStart = async () => {
       if (!canStart) return;
       // We do NOT auto-save as new config anymore to prevent duplicates.
@@ -187,6 +252,67 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
             {step === 1 ? '你想向谁进行路演？' : '告诉投资人你的项目详情'}
         </p>
       </div>
+
+      {showCustomPersona && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
+              <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full animate-in zoom-in-95">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <PenTool className="w-5 h-5 text-indigo-400" />
+                      自定义导师性格
+                  </h3>
+                  <form onSubmit={handleCustomPersonaSubmit} className="space-y-4">
+                      <div>
+                          <label className="text-xs text-slate-500 uppercase block mb-1">称呼</label>
+                          <input 
+                            required
+                            type="text" 
+                            value={customPersona.name}
+                            onChange={e => setCustomPersona({...customPersona, name: e.target.value})}
+                            placeholder="例如：乔布斯、孔子、慈祥的奶奶"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                          />
+                      </div>
+                      <div>
+                          <label className="text-xs text-slate-500 uppercase block mb-1">性格描述</label>
+                          <textarea 
+                            required
+                            value={customPersona.description}
+                            onChange={e => setCustomPersona({...customPersona, description: e.target.value})}
+                            placeholder="例如：极简主义者，对细节要求苛刻，直觉敏锐，不容忍平庸。"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24 resize-none"
+                          />
+                      </div>
+                      <div>
+                          <label className="text-xs text-slate-500 uppercase block mb-1">说话风格</label>
+                          <input 
+                            required
+                            type="text" 
+                            value={customPersona.style}
+                            onChange={e => setCustomPersona({...customPersona, style: e.target.value})}
+                            placeholder="例如：简短有力，充满哲理，经常反问。"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                          />
+                      </div>
+                      
+                      <div className="flex gap-3 pt-2">
+                          <button 
+                            type="button"
+                            onClick={() => setShowCustomPersona(false)}
+                            className="flex-1 py-2 rounded-lg border border-slate-700 text-slate-300 hover:bg-slate-800"
+                          >
+                              取消
+                          </button>
+                          <button 
+                            type="submit"
+                            className="flex-1 py-2 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700"
+                          >
+                              {user?.plan === 'FREE' ? '升级解锁' : '确认创建'}
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      )}
 
       {step === 1 && (
           <div className="max-w-2xl mx-auto space-y-6 animate-in slide-in-from-right-8 duration-300">
@@ -246,6 +372,10 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                             {p.id === 'shark' && <Briefcase className="text-white w-5 h-5" />}
                             {p.id === 'visionary' && <Rocket className="text-white w-5 h-5" />}
                             {p.id === 'skeptic' && <Glasses className="text-white w-5 h-5" />}
+                            {p.id === 'pragmatist' && <Target className="text-white w-5 h-5" />}
+                            {p.id === 'social' && <Heart className="text-white w-5 h-5" />}
+                            {p.id === 'global' && <Globe className="text-white w-5 h-5" />}
+                            {p.id === 'legal' && <Scale className="text-white w-5 h-5" />}
                             </div>
                             <div>
                             <h3 className={`font-bold transition-colors ${selectedPersona.id === p.id ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
@@ -289,6 +419,21 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                             )}
                         </button>
                         ))}
+                        
+                        <button
+                            onClick={() => setShowCustomPersona(true)}
+                            className="w-full relative flex items-center p-4 rounded-xl border border-dashed border-slate-700 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-300 text-left group"
+                        >
+                            <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mr-4 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                                <PenTool className="text-indigo-400 w-5 h-5" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-slate-300 group-hover:text-indigo-400 transition-colors">
+                                    自定义导师
+                                </h3>
+                                <p className="text-xs text-slate-500 mt-1 group-hover:text-slate-400">Pro 版专属 • 创建独一无二的 AI 导师</p>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>

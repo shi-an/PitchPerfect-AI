@@ -63,10 +63,19 @@ export const startPitchSession = async (persona: Persona, startup: StartupDetail
   }
 };
 
-export const sendPitchMessage = async (message: string): Promise<PitchResponse> => {
+export const sendPitchMessage = async (
+    message: string, 
+    context?: { persona: Persona; startup: StartupDetails },
+    history?: Array<{ role: 'user' | 'model'; text: string }>
+): Promise<PitchResponse> => {
   const provider = getModelProvider();
   
-  if (!currentContext.persona || !currentContext.startup) {
+  // Use provided context or fallback to local state
+  const activePersona = context?.persona || currentContext.persona;
+  const activeStartup = context?.startup || currentContext.startup;
+  const activeHistory = history || conversationHistory;
+  
+  if (!activePersona || !activeStartup) {
      return { response: "会话已失效，请刷新重试。", interest_change: 0, is_dealbreaker: false };
   }
 
@@ -76,9 +85,9 @@ export const sendPitchMessage = async (message: string): Promise<PitchResponse> 
       headers: getHeaders(),
       body: JSON.stringify({ 
         message, 
-        history: conversationHistory,
-        persona: currentContext.persona,
-        startup: currentContext.startup,
+        history: activeHistory,
+        persona: activePersona,
+        startup: activeStartup,
         provider 
       })
     });
@@ -89,9 +98,11 @@ export const sendPitchMessage = async (message: string): Promise<PitchResponse> 
 
     const data = await response.json();
     
-    // Update local history
-    conversationHistory.push({ role: 'user', text: message });
-    conversationHistory.push({ role: 'model', text: data.response });
+    // Update local history if we are using it (though PitchArena manages its own state now)
+    if (!history) {
+        conversationHistory.push({ role: 'user', text: message });
+        conversationHistory.push({ role: 'model', text: data.response });
+    }
     
     return data;
   } catch (error) {

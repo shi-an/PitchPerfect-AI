@@ -35,7 +35,7 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen w-full bg-slate-950 flex font-sans text-slate-100 selection:bg-violet-500/30">
       <AppSidebar />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-y-auto">
         <Outlet />
       </main>
     </div>
@@ -105,12 +105,13 @@ const ProfilePage = () => {
 
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <Routes>
       {/* Public Routes */}
       <Route element={<MainLayout />}>
-        <Route path="/" element={<Landing onStart={() => navigate('/login')} />} />
+        <Route path="/" element={<Landing onStart={() => user ? navigate('/app') : navigate('/login')} />} />
         <Route path="/about" element={<About />} />
         <Route path="/pricing" element={<Pricing onSubscribe={() => navigate('/login')} />} />
         <Route path="/login" element={<AuthPage />} />

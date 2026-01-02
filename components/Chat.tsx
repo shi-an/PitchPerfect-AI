@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, TrendingUp, TrendingDown, AlertCircle, X, StopCircle, Info } from 'lucide-react';
+import { Send, TrendingUp, TrendingDown, AlertCircle, X, StopCircle, Info, Lock } from 'lucide-react';
 import { sendPitchMessage } from '../services/geminiService';
 import { Persona, PitchMessage, StartupDetails } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   persona: Persona;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, onFinish, onExit, onProgress, initialHistory, initialScore, initialTrajectory }) => {
+  const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState(false);
   const [messages, setMessages] = useState<PitchMessage[]>(() => {
     if (initialHistory && initialHistory.length > 0) return initialHistory;
@@ -60,7 +62,13 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
 
     try {
       // Small artificial delay for "thinking" feel if API is too fast
-      const responsePromise = sendPitchMessage(userText);
+      // Pass context and history to be stateless
+      const simpleHistory = messages.map(m => ({
+          role: m.role,
+          text: m.text
+      }));
+      
+      const responsePromise = sendPitchMessage(userText, { persona, startup }, simpleHistory);
       const minDelayPromise = new Promise(resolve => setTimeout(resolve, 800));
       
       const [response] = await Promise.all([responsePromise, minDelayPromise]);
@@ -186,7 +194,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-hide">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6 pb-24">
           {messages.map((msg, index) => (
             <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex flex-col max-w-[90%] md:max-w-[70%] ${msg.role === 'user' ? 'message-enter-user' : 'message-enter'}`}>
@@ -238,7 +246,7 @@ export const PitchArena: React.FC<Props> = ({ persona, startup, initialMessage, 
       </div>
 
       {/* Input Area */}
-      <div className="p-4 md:p-6 bg-slate-950 border-t border-slate-900 relative z-20">
+      <div className="p-4 md:p-6 bg-slate-950 border-t border-slate-900 absolute bottom-0 left-0 right-0 z-30">
         <div className="max-w-4xl mx-auto">
           {isDealbreaker ? (
             <button 

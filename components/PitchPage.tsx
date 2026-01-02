@@ -5,7 +5,7 @@ import { PitchArena } from './Chat';
 import { FeedbackReport } from './Dashboard';
 import { Persona, StartupDetails, PitchMessage, PitchSession, PitchReport } from '../types';
 import { startPitchSession } from '../services/geminiService';
-import { savePitchSession, getPitchSession } from '../services/storageService';
+import { savePitchSession, getPitchSession, getUserHistory } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/UIContext';
 import { Loader2 } from 'lucide-react';
@@ -89,6 +89,25 @@ export const PitchPage: React.FC = () => {
   };
 
   const handleStartPitch = async (p: Persona, s: StartupDetails) => {
+    // Check Daily Limit for FREE users (Mentor is always free)
+    if (user?.plan === 'FREE' && p.id !== 'mentor') {
+        try {
+            const history = await getUserHistory(user.id);
+            const today = new Date().toISOString().split('T')[0];
+            const todaySessions = history.filter(sess => 
+                sess.date.startsWith(today) && sess.persona.id !== 'mentor'
+            );
+            
+            if (todaySessions.length >= 3) {
+                const confirmed = await toast.info('今日 AI 投资人路演次数已达上限（3次）。升级套餐以解锁无限次路演。');
+                navigate('/pricing');
+                return;
+            }
+        } catch (e) {
+            console.error("Failed to check limits", e);
+        }
+    }
+
     setPersona(p);
     setStartup(s);
     setInitializing(true);

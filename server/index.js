@@ -13,10 +13,45 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me'
 const PORT = process.env.PORT || 4000
 const DEV = process.env.NODE_ENV !== 'production'
 
+const rateLimit = (options) => {
+    const windowMs = options.windowMs || 60 * 1000;
+    const max = options.max || 100;
+    const requests = new Map();
+    
+    return (req, res, next) => {
+        const ip = req.ip;
+        const now = Date.now();
+        
+        if (!requests.has(ip)) {
+            requests.set(ip, []);
+        }
+        
+        const timestamps = requests.get(ip);
+        const windowStart = now - windowMs;
+        
+        // Remove old timestamps
+        while (timestamps.length > 0 && timestamps[0] < windowStart) {
+            timestamps.shift();
+        }
+        
+        if (timestamps.length >= max) {
+            return res.status(429).json({ error: 'Too many requests' });
+        }
+        
+        timestamps.push(now);
+        next();
+    };
+};
+
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
-app.use(express.json({ limit: '50mb' }))
-app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+app.use(express.json({ limit: '10mb' })) // Reduced from 50mb
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+// Rate limiting
+app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, max: 200 })); // 200 requests per 15 min globally
+app.use('/api/ai/', rateLimit({ windowMs: 60 * 1000, max: 20 })); // 20 AI requests per minute
+app.use('/api/auth/', rateLimit({ windowMs: 60 * 60 * 1000, max: 30 })); // 30 auth attempts per hour
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -97,6 +132,9 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password, role } = req.body
     if (!name || !email || !password) return res.status(400).json({ error: 'invalid_input' })
+    if (name.length > 50 || email.length > 100) return res.status(400).json({ error: 'input_too_long' })
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'invalid_email' })
+    
     const existing = await User.findOne({ email })
     if (existing) return res.status(409).json({ error: 'email_exists' })
     const passwordHash = await bcrypt.hash(password, 10)
@@ -198,7 +236,7 @@ app.post('/api/auth/reset/request', async (req, res) => {
     user.resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000)
     await user.save()
     if (DEV) console.log('Password reset token:', token)
-    res.json({ ok: true, token: DEV ? token : undefined })
+    res.json({ ok: true })
   } catch {
     res.status(500).json({ error: 'server_error' })
   }
@@ -436,6 +474,9 @@ app.post('/api/ai/start', authMiddleware, async (req, res) => {
 app.post('/api/ai/chat', authMiddleware, async (req, res) => {
   try {
     const { message, history, persona, startup, provider } = req.body
+    if (!message || message.length > 2000) return res.status(400).json({ error: 'message_too_long' })
+    if (history && history.length > 100) return res.status(400).json({ error: 'history_too_long' })
+    
     const result = await processPitchMessage(provider, history, message, persona, startup)
     res.json(result)
   } catch (e) {

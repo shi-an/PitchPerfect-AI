@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Check, X, Zap, Crown, Building2, CreditCard, Loader2 } from 'lucide-react';
 import { useUI } from '../contexts/UIContext';
 import { upgradeUserPlan } from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
   onSubscribe: () => void;
@@ -153,7 +154,11 @@ export const Pricing: React.FC<Props> = ({ onSubscribe }) => {
           <ul className="space-y-4 mb-8 flex-1">
             <li className="flex items-center gap-3 text-slate-300 text-sm">
               <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-              每日 3 次路演
+              每日 3 次 AI 投资人路演
+            </li>
+            <li className="flex items-center gap-3 text-slate-300 text-sm">
+              <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+              <strong>无限次</strong> AI 导师辅导
             </li>
             <li className="flex items-center gap-3 text-slate-300 text-sm">
               <Check className="w-4 h-4 text-emerald-500 shrink-0" />

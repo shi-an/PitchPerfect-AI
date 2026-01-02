@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserHistory, deletePitchSession, pinPitchSession, renamePitchSession } from '../services/storageService';
 import { PitchSession } from '../types';
-import { Plus, MessageSquare, LogOut, User as UserIcon, Settings, ChevronLeft, ChevronRight, Trash2, Pin, Share2, MoreHorizontal, Edit2 } from 'lucide-react';
+import { Plus, MessageSquare, LogOut, User as UserIcon, Settings, ChevronLeft, ChevronRight, Trash2, Pin, Share2, MoreHorizontal, Edit2, Crown } from 'lucide-react';
 import { useUI } from '../contexts/UIContext';
 
 export const AppSidebar: React.FC = () => {
@@ -240,6 +240,7 @@ export const AppSidebar: React.FC = () => {
                 <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
             </div>
             {!collapsed && (
+                <>
                 <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-white truncate">{user.name}</div>
                     <div className="text-xs text-slate-500 truncate flex items-center gap-1">
@@ -249,6 +250,16 @@ export const AppSidebar: React.FC = () => {
                         <span>{getRoleName(user.role)}</span>
                     </div>
                 </div>
+                {user.plan === 'FREE' && (
+                     <button 
+                        onClick={() => navigate('/pricing')} 
+                        className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 hover:text-amber-300 transition-colors"
+                        title="升级套餐"
+                     >
+                        <Crown className="w-4 h-4" />
+                     </button>
+                )}
+                </>
             )}
         </div>
         {!collapsed && (

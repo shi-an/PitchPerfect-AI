@@ -29,8 +29,8 @@ export const Landing: React.FC<Props> = ({ onStart }) => {
           </h1>
           
           <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            用强悍的 AI 投资人练习你的创业路演。即时获得关于故事讲述、
-            财务指标以及高压问答的反馈。
+            PitchPerfect AI 是您的全天候创业路演教练。通过模拟真实的高压投资人对话，
+            为您提供关于商业模式、故事讲述及财务逻辑的即时深度反馈，助您在真正走进会议室前胸有成竹。
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -56,24 +56,24 @@ export const Landing: React.FC<Props> = ({ onStart }) => {
               <div className="w-12 h-12 bg-violet-500/10 rounded-lg flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-violet-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Real-time Simulation</h3>
-              <p className="text-slate-400">对话会根据你的表达是否清晰、自信而动态变化。“兴趣计”一目了然。</p>
+              <h3 className="text-xl font-bold text-white mb-2">动态情感模拟</h3>
+              <p className="text-slate-400">告别死板的问答。AI 投资人的兴趣会根据您的回答实时波动，可视化“兴趣计”让您一眼看穿对方心理。</p>
             </div>
             
             <div className="p-6 rounded-2xl bg-slate-800/20 border border-slate-800 hover:border-fuchsia-500/30 transition-colors">
               <div className="w-12 h-12 bg-fuchsia-500/10 rounded-lg flex items-center justify-center mb-4">
                 <ShieldCheck className="w-6 h-6 text-fuchsia-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">多元投资人角色</h3>
-              <p className="text-slate-400">从只看利润的“鲨鱼”到追求登月的“愿景家”，为每种场景做好训练。</p>
+              <h3 className="text-xl font-bold text-white mb-2">多维实战场景</h3>
+              <p className="text-slate-400">从只看数据的“冷血 VC”到关注愿景的“天使投资人”，甚至还有温柔引导的“导师模式”，全方位打磨您的应变能力。</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-slate-800/20 border border-slate-800 hover:border-emerald-500/30 transition-colors">
               <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-4">
                 <BarChart className="w-6 h-6 text-emerald-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">详细分析</h3>
-              <p className="text-slate-400">获得全面的条款清单或拒绝原因，并附可执行的改进建议。</p>
+              <h3 className="text-xl font-bold text-white mb-2">深度复盘报告</h3>
+              <p className="text-slate-400">路演结束后，即刻生成包含 SWOT 分析、融资决策及具体改进建议的专业报告，让每一次练习都有据可依。</p>
             </div>
           </div>
         </div>
