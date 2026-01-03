@@ -103,6 +103,7 @@ export const Pricing: React.FC<Props> = ({ onSubscribe }) => {
                                 alt={`${paymentMethod === 'wechat' ? 'WeChat' : 'Alipay'} QR Code`} 
                                 className="w-48 h-48 object-contain"
                                 onError={(e) => {
+                                    console.error('Payment QR code failed to load:', e.target.src);
                                     // Fallback if image not found
                                     e.currentTarget.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://pitchperfect.ai/pay/${showPayment}?method=${paymentMethod}`;
                                 }}

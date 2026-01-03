@@ -225,11 +225,20 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
           navigate('/pricing');
           return;
       }
-      if (!customPersona.name || !customPersona.description || !customPersona.style) return;
+      if (!customPersona.name || !customPersona.description) return;
       
-      const newPersona = { ...customPersona, id: `custom_${Date.now()}` };
+      const newPersona = { 
+          ...customPersona, 
+          id: `custom_${Date.now()}`,
+          // Ensure all required fields have default values
+          style: customPersona.style || '自定义风格',
+          role: customPersona.role || '自定义导师',
+          icon: customPersona.icon || 'pen-tool',
+          color: customPersona.color || 'bg-indigo-600'
+      };
       setSelectedPersona(newPersona);
       setShowCustomPersona(false);
+      toast.success('自定义导师已创建');
   };
 
   const handleStart = async () => {
