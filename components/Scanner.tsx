@@ -366,7 +366,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                 {/* Investors Section */}
                 <div>
                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-3 ml-1">模拟投资人</h3>
-                    <div className="space-y-3">
+                    <div className="max-h-60 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
                         {PERSONAS.filter(p => p.id !== 'mentor').map(p => (
                         <button
                             key={p.id}
@@ -403,7 +403,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                 {/* Mentors Section */}
                 <div>
                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-3 ml-1">学习与指导</h3>
-                    <div className="space-y-3">
+                    <div className="max-h-40 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
                         {PERSONAS.filter(p => p.id === 'mentor').map(p => (
                         <button
                             key={p.id}
