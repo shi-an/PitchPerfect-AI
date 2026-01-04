@@ -7,21 +7,20 @@ interface Props {
 
 export const Landing: React.FC<Props> = ({ onStart }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen bg-slate-950">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/40 via-slate-900 to-slate-900 -z-10" />
+      <section className="relative py-20 md:py-32 overflow-hidden bg-slate-950">
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-900/20 to-slate-950 -z-10" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-6 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-6">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
             </span>
             现已支持多模型智能集成
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-8 leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white tracking-tight mb-8 leading-tight">
             掌控你的路演 <br />
             <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
               在关键时刻之前
