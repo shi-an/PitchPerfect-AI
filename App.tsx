@@ -17,19 +17,6 @@ import { Loader2 } from 'lucide-react';
 import { ViewState } from './types';
 import { useUI } from './contexts/UIContext';
 
-// Layout with Marketing Navbar
-const MainLayout = () => {
-  return (
-    <div className="min-h-screen w-full bg-slate-950 flex flex-col font-sans text-slate-100 selection:bg-violet-500/30">
-      <MarketingNavbar />
-      <main className="flex-1 flex flex-col">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
 // Layout for the App (Chat)
 const AppLayout = () => {
   return (

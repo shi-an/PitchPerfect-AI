@@ -62,28 +62,28 @@ export const History: React.FC<Props> = ({ user, onSelectSession, initialFilter 
   return (
     <div className="h-full overflow-y-auto">
     <div className="max-w-4xl mx-auto p-6 md:p-12">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-            <Clock className="w-8 h-8 text-violet-400" />
+      <div className="flex flex-col gap-6 mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+            <Clock className="w-6 h-6 md:w-8 md:h-8 text-violet-400" />
             路演历史
         </h2>
         
-        <div className="flex bg-slate-800 p-1 rounded-xl">
+        <div className="flex bg-slate-800 p-1 rounded-xl gap-1 overflow-x-auto">
             <button 
                 onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'all' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'all' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
             >
                 <LayoutGrid className="w-4 h-4" /> 全部
             </button>
             <button 
                 onClick={() => setFilter('pitch')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'pitch' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'pitch' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
             >
                 <Target className="w-4 h-4" /> 结果
             </button>
             <button 
                 onClick={() => setFilter('mentor')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'mentor' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${filter === 'mentor' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
             >
                 <BookOpen className="w-4 h-4" /> 指导
             </button>
@@ -107,21 +107,21 @@ export const History: React.FC<Props> = ({ user, onSelectSession, initialFilter 
                 <div 
                     key={session.id}
                     onClick={() => onSelectSession(session)}
-                    className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-violet-500/50 rounded-2xl p-6 transition-all cursor-pointer flex items-center justify-between"
+                    className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-violet-500/50 rounded-2xl p-4 md:p-6 transition-all cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
                 >
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto">
                         {/* Status Icon */}
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${isIncomplete
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shrink-0 ${isIncomplete
                             ? 'bg-violet-500/10 text-violet-400'
                             : (isFunded ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500')
                         }`}>
-                            {isIncomplete ? <Clock className="w-6 h-6" /> : (isFunded ? <Trophy className="w-6 h-6" /> : <XCircle className="w-6 h-6" />)}
+                            {isIncomplete ? <Clock className="w-5 h-5 md:w-6 md:h-6" /> : (isFunded ? <Trophy className="w-5 h-5 md:w-6 md:h-6" /> : <XCircle className="w-5 h-5 md:w-6 md:h-6" />)}
                         </div>
 
                         {/* Details */}
-                        <div>
-                            <h3 className="text-lg font-bold text-white mb-1">{session.startup.name}</h3>
-                            <div className="flex items-center gap-4 text-sm text-slate-400">
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-base md:text-lg font-bold text-white mb-1 truncate">{session.startup.name}</h3>
+                            <div className="flex flex-wrap items-center gap-3 text-xs md:text-sm text-slate-400">
                                 <span className="flex items-center gap-1">
                                     <span className={`w-2 h-2 rounded-full ${session.persona.color}`}></span>
                                     {session.persona.name}
@@ -140,13 +140,13 @@ export const History: React.FC<Props> = ({ user, onSelectSession, initialFilter 
                     </div>
 
                     {/* Score */}
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-between">
                         <div className="text-right">
                             <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">{isIncomplete ? '当前进度' : '得分'}</div>
                             {isIncomplete ? (
                               <div className="text-sm font-bold text-violet-300">进行中 · {Math.round(session.score)}%</div>
                             ) : (
-                              <div className={`text-2xl font-bold ${
+                              <div className={`text-xl md:text-2xl font-bold ${
                                   session.score >= 70 ? 'text-emerald-400' : 
                                   session.score >= 40 ? 'text-amber-400' : 'text-red-400'
                               }`}>
@@ -154,14 +154,16 @@ export const History: React.FC<Props> = ({ user, onSelectSession, initialFilter 
                               </div>
                             )}
                         </div>
-                        <button 
-                            onClick={(e) => handleDelete(e, session.id)}
-                            className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
-                            title="删除记录"
-                        >
-                            <Trash2 className="w-5 h-5" />
-                        </button>
-                        <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors" />
+                        <div className="flex items-center gap-3">
+                            <button 
+                                onClick={(e) => handleDelete(e, session.id)}
+                                className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
+                                title="删除记录"
+                            >
+                                <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
+                            </button>
+                            <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-slate-600 group-hover:text-white transition-colors" />
+                        </div>
                     </div>
                 </div>
             );

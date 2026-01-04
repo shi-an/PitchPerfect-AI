@@ -204,13 +204,13 @@ export const Profile: React.FC<Props> = ({ user, onLogout, onNavigate }) => {
     <div className="max-w-6xl mx-auto p-6 md:p-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-slate-900/50 p-8 rounded-3xl border border-slate-800 relative">
-        <div className="flex items-center gap-6">
+      <div className="flex flex-col items-center justify-between gap-6 mb-12 bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800 relative">
+        <div className="flex flex-col md:flex-row items-center gap-6 w-full">
           <div className="relative">
-            <img src={user.avatar} alt="Profile" className="w-24 h-24 rounded-full border-4 border-slate-800 bg-slate-700" />
-            <div className="absolute bottom-1 right-1 w-6 h-6 bg-emerald-500 rounded-full border-4 border-slate-900" title="在线"></div>
+            <img src={user.avatar} alt="Profile" className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-slate-800 bg-slate-700" />
+            <div className="absolute bottom-1 right-1 w-5 h-5 md:w-6 md:h-6 bg-emerald-500 rounded-full border-4 border-slate-900" title="在线"></div>
           </div>
-          <div>
+          <div className="flex-1">
             {editingProfile ? (
                 <div className="flex flex-col gap-2">
                     <input 
@@ -236,12 +236,12 @@ export const Profile: React.FC<Props> = ({ user, onLogout, onNavigate }) => {
             ) : (
                 <>
                 <div className="flex items-center gap-2">
-                    <h1 className="text-3xl font-bold text-white mb-1">{user.name}</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">{user.name}</h1>
                     <button onClick={startEditProfile} className="text-slate-500 hover:text-white p-1">
                         <Edit2 className="w-4 h-4" />
                     </button>
                 </div>
-                <div className="flex items-center gap-4 text-slate-400 text-sm">
+                <div className="flex flex-wrap items-center gap-4 text-slate-400 text-sm">
                 <span className="flex items-center gap-1"><UserIcon className="w-4 h-4" /> {getRoleName(user.role)}</span>
                 <span className="flex items-center gap-1">
                     <Crown className={`w-4 h-4 ${user.plan === 'PRO' ? 'text-violet-400' : user.plan === 'ENTERPRISE' ? 'text-amber-400' : 'text-slate-400'}`} /> 
@@ -253,17 +253,17 @@ export const Profile: React.FC<Props> = ({ user, onLogout, onNavigate }) => {
           </div>
         </div>
         
-        <div className="flex gap-3 relative">
+        <div className="flex flex-col sm:flex-row gap-3 relative w-full justify-center sm:justify-end">
             {!changingPassword ? (
                 <button 
                 onClick={() => setChangingPassword(true)}
-                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-all flex items-center gap-2 border border-slate-700 h-full"
+                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-all flex items-center gap-2 border border-slate-700 w-full sm:w-auto"
                 >
                 <Lock className="w-5 h-5" />
                 安全设置
                 </button>
             ) : (
-                <div className="absolute top-full right-0 mt-4 w-80 z-50 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 origin-top-right">
+                <div className="absolute top-full right-0 mt-4 w-full max-w-xs z-50 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 origin-top-right">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-white font-bold flex items-center gap-2">
                             <Lock className="w-4 h-4 text-violet-400" /> 修改密码
@@ -312,7 +312,7 @@ export const Profile: React.FC<Props> = ({ user, onLogout, onNavigate }) => {
             
             <button 
             onClick={onLogout}
-            className="px-6 py-3 bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-300 rounded-xl transition-all flex items-center gap-2 border border-slate-700"
+            className="px-6 py-3 bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-300 rounded-xl transition-all flex items-center gap-2 border border-slate-700 w-full sm:w-auto"
             >
             <LogOut className="w-5 h-5" />
             退出登录
@@ -322,41 +322,41 @@ export const Profile: React.FC<Props> = ({ user, onLogout, onNavigate }) => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 hover:border-violet-500/50 transition-colors">
-            <div className="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center mb-3">
-               <Activity className="w-5 h-5 text-violet-400" />
+        <div className="bg-slate-800/50 p-4 md:p-6 rounded-2xl border border-slate-700 hover:border-violet-500/50 transition-colors">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-violet-500/20 rounded-lg flex items-center justify-center mb-2 md:mb-3">
+               <Activity className="w-4 h-4 md:w-5 md:h-5 text-violet-400" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{stats.total}</div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">路演总数</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stats.total}</div>
+            <div className="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider font-bold">路演总数</div>
         </div>
         
-        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 hover:border-emerald-500/50 transition-colors">
-            <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-3">
-               <Target className="w-5 h-5 text-emerald-400" />
+        <div className="bg-slate-800/50 p-4 md:p-6 rounded-2xl border border-slate-700 hover:border-emerald-500/50 transition-colors">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-2 md:mb-3">
+               <Target className="w-4 h-4 md:w-5 md:h-5 text-emerald-400" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{stats.fundedRate}%</div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">获投率</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stats.fundedRate}%</div>
+            <div className="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider font-bold">获投率</div>
         </div>
 
-        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 hover:border-amber-500/50 transition-colors">
-            <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center mb-3">
-               <Trophy className="w-5 h-5 text-amber-400" />
+        <div className="bg-slate-800/50 p-4 md:p-6 rounded-2xl border border-slate-700 hover:border-amber-500/50 transition-colors">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-500/20 rounded-lg flex items-center justify-center mb-2 md:mb-3">
+               <Trophy className="w-4 h-4 md:w-5 md:h-5 text-amber-400" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{stats.highestScore}</div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">最高分</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stats.highestScore}</div>
+            <div className="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider font-bold">最高分</div>
         </div>
 
-        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 hover:border-blue-500/50 transition-colors">
-            <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mb-3">
-               <TrendingUp className="w-5 h-5 text-blue-400" />
+        <div className="bg-slate-800/50 p-4 md:p-6 rounded-2xl border border-slate-700 hover:border-blue-500/50 transition-colors">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mb-2 md:mb-3">
+               <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{stats.avgScore}</div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">平均分</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stats.avgScore}</div>
+            <div className="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider font-bold">平均分</div>
         </div>
       </div>
 
       {/* Activity Grid */}
-      <div className="grid md:grid-cols-2 gap-8 mb-12">
+      <div className="grid gap-6 md:grid-cols-2 mb-12">
         {/* Pitch Results */}
         <div className="space-y-4">
            <div className="flex items-center justify-between mb-2">
