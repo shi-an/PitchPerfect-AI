@@ -366,34 +366,34 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                 {/* Investors Section */}
                 <div>
                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-3 ml-1">模拟投资人</h3>
-                    <div className="max-h-60 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
+                    <div className="max-h-[240px] sm:max-h-60 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
                         {PERSONAS.filter(p => p.id !== 'mentor').map(p => (
                         <button
                             key={p.id}
                             onClick={() => setSelectedPersona(p)}
-                            className={`w-full relative flex items-center p-4 rounded-xl border transition-all duration-300 text-left group ${
+                            className={`w-full relative flex items-center p-3 sm:p-4 rounded-xl border transition-all duration-300 text-left group ${
                             selectedPersona.id === p.id
                                 ? 'bg-slate-800 border-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.15)] scale-[1.02] ring-1 ring-violet-500'
                                 : 'bg-slate-800/30 border-slate-800 hover:bg-slate-800 hover:border-slate-600 hover:-translate-y-1'
                             }`}
                         >
-                            <div className={`w-12 h-12 rounded-full ${p.color} flex items-center justify-center mr-4 shrink-0 shadow-lg transition-transform group-hover:scale-110`}>
-                            {p.id === 'shark' && <Briefcase className="text-white w-5 h-5" />}
-                            {p.id === 'visionary' && <Rocket className="text-white w-5 h-5" />}
-                            {p.id === 'skeptic' && <Glasses className="text-white w-5 h-5" />}
-                            {p.id === 'pragmatist' && <Target className="text-white w-5 h-5" />}
-                            {p.id === 'social' && <Heart className="text-white w-5 h-5" />}
-                            {p.id === 'global' && <Globe className="text-white w-5 h-5" />}
-                            {p.id === 'legal' && <Scale className="text-white w-5 h-5" />}
+                            <div className={`w-10 sm:w-12 h-10 sm:h-12 rounded-full ${p.color} flex items-center justify-center mr-3 sm:mr-4 shrink-0 shadow-lg transition-transform group-hover:scale-110`}>
+                            {p.id === 'shark' && <Briefcase className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
+                            {p.id === 'visionary' && <Rocket className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
+                            {p.id === 'skeptic' && <Glasses className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
+                            {p.id === 'pragmatist' && <Target className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
+                            {p.id === 'social' && <Heart className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
+                            {p.id === 'global' && <Globe className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
+                            {p.id === 'legal' && <Scale className="text-white w-4 sm:w-5 h-4 sm:h-5" />}
                             </div>
-                            <div>
-                            <h3 className={`font-bold transition-colors ${selectedPersona.id === p.id ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
+                            <div className="flex-1 min-w-0">
+                            <h3 className={`font-bold text-sm transition-colors ${selectedPersona.id === p.id ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
                                 {p.name}
                             </h3>
-                            <p className="text-xs text-slate-400 mt-1 group-hover:text-slate-300 transition-colors">{p.role} • {p.style}</p>
+                            <p className="text-xs text-slate-400 mt-1 group-hover:text-slate-300 transition-colors truncate">{p.role} • {p.style}</p>
                             </div>
                             {selectedPersona.id === p.id && (
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
+                                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
                             )}
                         </button>
                         ))}
@@ -403,44 +403,44 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                 {/* Mentors Section */}
                 <div>
                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-3 ml-1">学习与指导</h3>
-                    <div className="max-h-40 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
+                    <div className="max-h-[160px] sm:max-h-40 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
                         {PERSONAS.filter(p => p.id === 'mentor').map(p => (
                         <button
                             key={p.id}
                             onClick={() => setSelectedPersona(p)}
-                            className={`w-full relative flex items-center p-4 rounded-xl border transition-all duration-300 text-left group ${
+                            className={`w-full relative flex items-center p-3 sm:p-4 rounded-xl border transition-all duration-300 text-left group ${
                             selectedPersona.id === p.id
                                 ? 'bg-emerald-900/20 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.15)] scale-[1.02] ring-1 ring-emerald-500'
                                 : 'bg-slate-800/30 border-slate-800 hover:bg-slate-800 hover:border-emerald-500/50 hover:-translate-y-1'
                             }`}
                         >
-                            <div className={`w-12 h-12 rounded-full ${p.color} flex items-center justify-center mr-4 shrink-0 shadow-lg transition-transform group-hover:scale-110`}>
-                                <BookOpen className="text-white w-5 h-5" />
+                            <div className={`w-10 sm:w-12 h-10 sm:h-12 rounded-full ${p.color} flex items-center justify-center mr-3 sm:mr-4 shrink-0 shadow-lg transition-transform group-hover:scale-110`}>
+                                <BookOpen className="text-white w-4 sm:w-5 h-4 sm:h-5" />
                             </div>
-                            <div>
-                            <h3 className={`font-bold transition-colors ${selectedPersona.id === p.id ? 'text-emerald-400' : 'text-slate-300 group-hover:text-emerald-400'}`}>
+                            <div className="flex-1 min-w-0">
+                            <h3 className={`font-bold text-sm transition-colors ${selectedPersona.id === p.id ? 'text-emerald-400' : 'text-slate-300 group-hover:text-emerald-400'}`}>
                                 {p.name}
                             </h3>
-                            <p className="text-xs text-slate-400 mt-1 group-hover:text-slate-300 transition-colors">{p.role} • {p.style}</p>
+                            <p className="text-xs text-slate-400 mt-1 group-hover:text-slate-300 transition-colors truncate">{p.role} • {p.style}</p>
                             </div>
                             {selectedPersona.id === p.id && (
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                             )}
                         </button>
                         ))}
                         
                         <button
                             onClick={() => setShowCustomPersona(true)}
-                            className="w-full relative flex items-center p-4 rounded-xl border border-dashed border-slate-700 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-300 text-left group"
+                            className="w-full relative flex items-center p-3 sm:p-4 rounded-xl border border-dashed border-slate-700 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-300 text-left group"
                         >
-                            <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mr-4 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                                <PenTool className="text-indigo-400 w-5 h-5" />
+                            <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-slate-800 flex items-center justify-center mr-3 sm:mr-4 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                                <PenTool className="text-indigo-400 w-4 sm:w-5 h-4 sm:h-5" />
                             </div>
-                            <div>
-                                <h3 className="font-bold text-slate-300 group-hover:text-indigo-400 transition-colors">
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-sm text-slate-300 group-hover:text-indigo-400 transition-colors">
                                     自定义导师
                                 </h3>
-                                <p className="text-xs text-slate-500 mt-1 group-hover:text-slate-400">Pro 版专属 • 创建独一无二的 AI 导师</p>
+                                <p className="text-xs text-slate-500 mt-1 group-hover:text-slate-400 truncate">Pro 版专属 • 创建独一无二的 AI 导师</p>
                             </div>
                         </button>
                     </div>
@@ -460,9 +460,9 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
 
       {step === 2 && (
         <div className="animate-in slide-in-from-right-8 duration-300">
-             <div className="grid md:grid-cols-3 gap-8 mb-8">
+             <div className="grid gap-6 md:grid-cols-3 md:gap-8 mb-8">
                 {/* Saved Startups List */}
-                <div className="md:col-span-1 space-y-3">
+                <div className="space-y-3">
                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-2">已保存的项目</h3>
                     <button
                         onClick={() => handleSelectStartup('new')}
@@ -474,6 +474,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                     >
                         <Plus className="w-4 h-4" /> 新建项目
                     </button>
+                    <div className="max-h-40 overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
                     {savedStartups.map(s => (
                         <button
                             key={s.id}
@@ -488,11 +489,12 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                             <div className="text-xs opacity-70 truncate">{s.description}</div>
                         </button>
                     ))}
+                    </div>
                 </div>
 
                 {/* Editor */}
                 <div className="md:col-span-2 space-y-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-wrap justify-between items-center gap-2">
                         <h3 className="text-xs font-bold uppercase text-slate-500">项目详情</h3>
                         <div className="flex gap-2">
                              <button 
@@ -523,7 +525,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                             if (selectedStartupId) setSelectedStartupId(null); // Switch to 'custom' mode if editing a saved one
                         }}
                         placeholder="例如：宠物出行的优步"
-                        className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-slate-800 outline-none text-white transition-all placeholder:text-slate-600 shadow-sm"
+                        className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-3 sm:p-4 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-slate-800 outline-none text-white transition-all placeholder:text-slate-600 shadow-sm"
                     />
                     </div>
                     
@@ -536,13 +538,13 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                             if (selectedStartupId) setSelectedStartupId(null);
                         }}
                         placeholder="我们通过自动驾驶车辆帮助宠物通勤上班……"
-                        className="w-full h-40 bg-slate-800/50 border border-slate-700 rounded-xl p-4 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-slate-800 outline-none text-white transition-all resize-none placeholder:text-slate-600 shadow-sm"
+                        className="w-full h-32 sm:h-40 bg-slate-800/50 border border-slate-700 rounded-xl p-3 sm:p-4 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 focus:bg-slate-800 outline-none text-white transition-all resize-none placeholder:text-slate-600 shadow-sm"
                     />
                     </div>
                 </div>
              </div>
 
-             <div className="flex justify-between pt-4 border-t border-slate-800">
+             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-800">
                 <button
                     onClick={() => setStep(1)}
                     className="px-6 py-3 text-slate-400 hover:text-white font-medium transition-colors"
@@ -552,7 +554,7 @@ export const SetupScreen: React.FC<Props> = ({ onStart }) => {
                 <button
                     onClick={handleStart}
                     disabled={!canStart}
-                    className={`px-12 py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 flex items-center gap-2 ${
+                    className={`w-full sm:w-auto px-8 sm:px-12 py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
                         canStart 
                         ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:scale-105 active:scale-95 shadow-violet-900/50 hover:shadow-violet-900/70' 
                         : 'bg-slate-800 text-slate-600 cursor-not-allowed grayscale'
